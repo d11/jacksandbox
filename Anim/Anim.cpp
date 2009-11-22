@@ -9,7 +9,8 @@
 
 #include "Anim.h"
 #include "Drawer.h"
-
+#include "Skeleton.h"
+#include "Spline.h"
 using namespace std;
 
 void finish()
