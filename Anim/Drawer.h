@@ -1,6 +1,6 @@
 #include <SDL.h>
 #include "Vector.h"
-#include <cairo.h>
+#include <cairo/cairo.h>
 
 class Drawer {
 private:

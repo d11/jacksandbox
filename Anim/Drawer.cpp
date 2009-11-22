@@ -1,10 +1,10 @@
 #include "Drawer.h"
+#include "Vector.h"
 
-#include <cairo.h>
+#include <cairo/cairo.h>
 #include <iostream>
 #include <exception>
 
-class Vector;
 using namespace std;
 
 void Drawer::BeginDrawing() {

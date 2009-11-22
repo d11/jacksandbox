@@ -1,5 +1,4 @@
 // Anim.cpp : Defines the entry point for the application.
-//
 
 #define WIDTH 640
 #define HEIGHT 480
@@ -56,6 +55,8 @@ int main(int argc, char *argv[]) {
    drawer.DrawLine(v1, v2);
    drawer.DrawText(v2, "Yeaaaaah");
    drawer.EndDrawing();
+
+
 
    SDL_UnlockSurface(drawSurface);
 
