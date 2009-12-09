@@ -9,6 +9,7 @@ private:
 public:
    Vector() : mX(0.0), mY(0.0), mW(0.0) {}
    Vector(double x, double y, double w) : mX(x), mY(y), mW(w) {}
+   Vector(double x, double y) : mX(x), mY(y), mW(0.0) {}
 
    inline double GetLength() { return sqrt(mX*mX + mY*mY); }
 
