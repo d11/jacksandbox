@@ -9,6 +9,7 @@ public:
    virtual void BeginDrawing() = 0;
    virtual void EndDrawing() = 0;
 	virtual void DrawLine(const Vector &a, const Vector &b) = 0;
+	virtual void DrawRect(const Vector &a, const Vector &b) = 0;
    virtual void DrawText(const Vector &pos, const char *text) = 0;
 };
 
@@ -23,6 +24,7 @@ public:
    void EndDrawing();
 
 	void DrawLine(const Vector &a, const Vector &b);
+	void DrawRect(const Vector &a, const Vector &b);
    void DrawText(const Vector &pos, const char *text);
 };
 
@@ -31,6 +33,7 @@ class NullDrawer : public Drawer {
    void EndDrawing() {};
 
 	void DrawLine(const Vector &a, const Vector &b) {};
+	void DrawRect(const Vector &a, const Vector &b) {};
    void DrawText(const Vector &pos, const char *text) {};
 };
 

@@ -195,6 +195,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Loggable.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Matrix.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Skeleton.h"
 				>
 			</File>
@@ -203,7 +211,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SplineListener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SplineView.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Vector.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Widget.h"
 				>
 			</File>
 		</Filter>
