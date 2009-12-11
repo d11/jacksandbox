@@ -8,6 +8,26 @@
 
 using namespace std;
 
+class NodePainter : public SplineNodeVisitor {
+private:
+   Drawer &mDrawer;
+   Matrix &mTransform; // TODO put elsewher
+public:
+   NodePainter(Drawer &drawer, Matrix &trans) : mDrawer(drawer), mTransform(trans) {
+
+	  mTransform.Print();
+   }
+   void Visit(SplineNode &node)
+   {
+      Vector v = node.GetPos();
+      v.MakeFree();
+      v = mTransform.Multiply(v);
+
+      cout << "visiting " << v.GetX() << ", " << v.GetY() << endl;
+      mDrawer.DrawCircle(v, 5.0);
+   }
+};
+
 class SplineView : public Widget, SplineListener {
 private:
    Spline *mSpline;
@@ -31,7 +51,6 @@ public:
    }
 
    virtual void Paint() {
-
       Vector c1(0.0, 0.0, 1.0);
       Vector c2(1.0, 1.0, 1.0);
       c1 = mTransform.Multiply(c1);
@@ -41,7 +60,7 @@ public:
       if (!mSpline) {cout << "no spline!!" << endl; return;}
       Vector v1(0.0, 0.0);
       Vector v2(0.0, 0.0);
-      cout << "painting spline" << endl;
+
       double x1 = 0.0;
       double x2 = 0.0;
       double y1 = 0.0;
@@ -57,8 +76,11 @@ public:
          v1 = mTransform.Multiply(Vector(x1, y1, 1.0));
          v2 = mTransform.Multiply(Vector(x2, y2, 1.0));
          mDrawer.DrawLine(v1, v2);
-
       }
+
+      NodePainter nodePainter(mDrawer, mTransform);
+      mSpline->VisitNodes(nodePainter);
+
    }
 };
 #endif /* End of include guard: __SPLINEVIEW__ */

@@ -37,6 +37,14 @@ void CairoDrawer::DrawRect(const Vector &a, const Vector &b) {
    DrawLine(a, c); DrawLine(c, b); DrawLine(b, d); DrawLine(d, a);
 }
 
+void CairoDrawer::DrawCircle(const Vector &a, double radius) {
+   cairo_new_path(mCairo);
+   cairo_set_line_width (mCairo, 1.2);
+   cairo_set_source_rgb(mCairo, 1.0, 1.0, 0.5);
+   cairo_arc(mCairo, a.GetX(), a.GetY(), radius, 0.0, 2*M_PI);
+   cairo_stroke_preserve(mCairo);
+}
+
 void CairoDrawer::DrawText(const Vector &pos, const char *text) {
    cairo_select_font_face (mCairo, "terminus", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
    cairo_select_font_face (mCairo, "monospace", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);

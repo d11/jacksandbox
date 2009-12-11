@@ -20,6 +20,8 @@ public:
    inline double GetY() const { return mY; }
    inline double GetW() const { return mW; }
 
+   inline void MakeFree() { mW = 1.0; }
+
    Vector FlattenX() { Vector v(*this); v.mX = 0; return v;}
    Vector FlattenY() { Vector v(*this); v.mY = 0; return v;}
 

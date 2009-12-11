@@ -50,17 +50,27 @@ public:
       return Vector(vs[0], vs[1], vs[2]);
    }
 
-   Matrix Multiply(const Matrix &m) const {
-      ////todo
-
+   Matrix Multiply(const Matrix &other) const {
+      ////TODO test
+      Matrix m;
+      for (int i = 0; i <= 2; ++i) {
+         for (int j = 0; j <= 2; ++j) {
+            m.mEntries[i][j] = 0.0;
+            for (int k = 0; k <= 2; ++k) {
+               m.mEntries[i][j] += mEntries[i][k]*other.mEntries[k][j];
+            }
+         }
+      }
+      return m;
    }
 
    void Print() {
 	   for (int i = 0; i <= 2; ++i) {
+		 cout << "[";
 		 for (int j = 0; j <= 2; ++j) {
-			cout << mEntries[i][j] << " ";
+			cout << mEntries[i][j] << " \t ";
 		 }
-		 cout << endl;
+		 cout << "]" << endl;
 	   }
    }
 

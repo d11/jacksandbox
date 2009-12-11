@@ -29,10 +29,10 @@ public:
       Log("Moved..");
    }
 
-   virtual void OnClickDown(const Vector &pos) {
+   virtual void OnClickDown(const Vector &) {
       Log("Received click down");
    }
-   virtual void OnClickUp(const Vector &pos) {
+   virtual void OnClickUp(const Vector &) {
       Log("Received click up");
    }
 };

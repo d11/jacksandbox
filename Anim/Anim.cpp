@@ -66,18 +66,16 @@ int main(int argc, char *argv[]) {
    double hOffset = 50.0;
    drawer.BeginDrawing();
    for (i = 0; i < 26; ++i){
-	  
       double x= hOffset+hGap*i;
       double y = vOffset + vHeight*sin(i/25.0*M_PI*2);
       Vector v1(x, y, 0);
       Vector v2(x+(13-i)*3, vOffset + vHeight, 0);
-      //char c = 65 + i;
-      drawer.DrawLine(v1, v2); 
-      //drawer.DrawText(v1, &c);
+      char c = 65 + i;
+      drawer.DrawLine(v1, v2);
+      drawer.DrawText(v1, &c);
    }
-  
 	Spline spl;
-	spl.AddNode(Vector(0.0, 1.0, 0.0));
+	spl.AddNode(Vector(0.0, 0.2, 0.0));
 	spl.AddNode(Vector(0.2, 0.8, 0.0));
 	spl.AddNode(Vector(0.5, 0.4, 0.0));
 	spl.AddNode(Vector(0.8, 0.5, 0.0));
