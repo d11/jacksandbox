@@ -19,6 +19,7 @@
 #include "Spline.h"
 #include "SplineView.h"
 
+#include "Rect.h"
 using namespace std;
 
 void finish()
@@ -74,6 +75,9 @@ int main(int argc, char *argv[]) {
       drawer.DrawLine(v1, v2);
       drawer.DrawText(v1, &c);
    }
+
+   Widget rootWidget("root", videoSurface->clip_rect, NULL);
+
 	Spline spl;
 	spl.AddNode(Vector(0.0, 0.2, 0.0));
 	spl.AddNode(Vector(0.2, 0.8, 0.0));
@@ -81,14 +85,14 @@ int main(int argc, char *argv[]) {
 	spl.AddNode(Vector(0.8, 0.5, 0.0));
 	spl.AddNode(Vector(1.0, 0.7, 0.0));
 
-	SDL_Rect rec;
-	rec.h = 160;
-	rec.w = 300;
-	rec.x = 20;
-	rec.y = 20;
-	SplineView sv(&spl, rec, drawer);
-	sv.Paint();
-drawer.EndDrawing();
+	Rect<double> rec;
+	rec.h = 0.3;
+	rec.w = 0.47;
+	rec.x = 0.031;
+	rec.y = 0.042;
+	SplineView sv(&spl, rec, &rootWidget);
+	rootWidget.Paint(drawer);
+   drawer.EndDrawing();
    SDL_UnlockSurface(drawSurface);
 
    // Copy to the video memory
@@ -104,23 +108,25 @@ drawer.EndDrawing();
     while((!done) && (SDL_WaitEvent(&e))) {
         switch(e.type) {
 			case SDL_KEYUP:
-                // Handle any key presses here.
-				if (e.key.keysym.sym == SDLK_ESCAPE) {
-					done = true;
-				}
-                break;
+            // Handle any key presses here.
+            if (e.key.keysym.sym == SDLK_ESCAPE || e.key.keysym.sym == SDLK_q) {
+               done = true;
+            }
+            break;
 
-            case SDL_MOUSEBUTTONDOWN:
-                break;
+         case SDL_MOUSEBUTTONDOWN:
+            // TODO check which button
+            rootWidget.OnClickDown(Vector(e.button.x, e.button.y, 1.0));
+            break;
 
-            case SDL_QUIT:
-                done = true;
-                break;
-                
-            default:
-                break;
-        }     
-    }      
+         case SDL_QUIT:
+            done = true;
+            break;
+
+         default:
+            break;
+        }
+    }
 
 	finish();
 	return 0;

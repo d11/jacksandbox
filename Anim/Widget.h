@@ -4,33 +4,69 @@
 #include <SDL.h>
 #include "Drawer.h"
 #include "Loggable.h"
+#include "Matrix.h"
+#include "Rect.h"
 
 class Widget : public Loggable {
 protected:
-   SDL_Rect mRect;
-   Drawer &mDrawer;
+   Rect<double> mRect;
+   Matrix mTransform;
+   std::vector<Widget *> mChildren;
+   Widget *mParent;
+
 public:
-   Widget(const char *name, SDL_Rect rect, Drawer &drawer) : Loggable(name), mRect(rect), mDrawer(drawer) {
+   Widget(const char *name, Rect<double> rect, Widget *parent = NULL) : Loggable(name), mRect(rect), mTransform(), mChildren(), mParent(parent) {
+	  mTransform.SetScale(Vector(mRect.w, -mRect.h));
+	  mTransform.SetTranslate(Vector(mRect.x, mRect.y+mRect.h));
+     if (NULL != mParent)
+     {
+        mTransform = mParent->mTransform.Multiply(mTransform);
+        mParent->AddChild(this);
+     }
+
+     // Temporary
+	  mTransform.Print();
    }
 
-   void SetDrawer(Drawer &drawer) { mDrawer = drawer; }
+   const Rect<double>& GetRect() {
+      return mRect;
+   }
 
-   void SetRect(const SDL_Rect &r) {
+   void AddChild(Widget *child) {
+      mChildren.push_back(child);
+   }
+
+
+   void SetRect(const Rect<double> &r) {
       mRect = r;
       OnResize();
-      OnReposition();
+      OnMove();
    }
 
-   virtual void Paint() = 0;
+   virtual void Paint(Drawer &drawer) {
+      std::vector<Widget*>::iterator iter;
+      for (iter = mChildren.begin(); iter != mChildren.end(); ++iter) {
+         (*iter)->Paint(drawer);
+      }
+
+   }
    virtual void OnResize() {
       Log("Resized...");
    }
-   virtual void OnReposition() {
+   virtual void OnMove() {
       Log("Moved..");
    }
 
-   virtual void OnClickDown(const Vector &) {
+   virtual void OnClickDown(const Vector &vec) {
+      Vector vnew;
+      Matrix inv = mTransform.Inverse();
+      vnew= inv.Multiply(vec); // TODO use stored inverse
       Log("Received click down");
+      std::vector<Widget*>::iterator iter;
+      for (iter = mChildren.begin(); iter != mChildren.end(); ++iter) {
+         if ((*iter)->GetRect().Contains(vnew))
+            (*iter)->OnClickDown(vec);
+      }
    }
    virtual void OnClickUp(const Vector &) {
       Log("Received click up");

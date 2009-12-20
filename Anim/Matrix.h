@@ -26,6 +26,14 @@ public:
 	   }
    }
 
+   void SetZero() {
+	   for (int i = 0; i <= 2; ++i) {
+		   for (int j = 0; j <= 2; ++j) {
+			   mEntries[i][j] = 0.0;
+		   }
+	   }
+   }
+
    void SetScale(Vector s) {
 	  mEntries[0][0] = s.GetX();
 	  mEntries[0][1] = 0.0;
@@ -33,7 +41,6 @@ public:
 	  mEntries[1][1] = s.GetY();
    }
 
-   // TODO check/tidy
    Vector Multiply(const Vector &x) const {
       double vi[3];
       vi[0] = x.GetX();
@@ -41,7 +48,7 @@ public:
       vi[2] = x.GetW();
 
       double vs[3];
-	  vs[0] = 0.0; vs[1] = 0.0; vs[2] = 0.0;
+      vs[0] = 0.0; vs[1] = 0.0; vs[2] = 0.0;
       for (int i = 0; i <= 2 ; ++i) {
          for (int j = 0; j <= 2; ++j) {
             vs[i]+=mEntries[i][j]*vi[j];
@@ -51,7 +58,6 @@ public:
    }
 
    Matrix Multiply(const Matrix &other) const {
-      ////TODO test
       Matrix m;
       for (int i = 0; i <= 2; ++i) {
          for (int j = 0; j <= 2; ++j) {
@@ -64,14 +70,81 @@ public:
       return m;
    }
 
-   void Print() {
-	   for (int i = 0; i <= 2; ++i) {
-		 cout << "[";
-		 for (int j = 0; j <= 2; ++j) {
-			cout << mEntries[i][j] << " \t ";
-		 }
-		 cout << "]" << endl;
-	   }
+   void Print() const {
+      for (int i = 0; i <= 2; ++i) {
+         cout << "[";
+         for (int j = 0; j <= 2; ++j) {
+            cout << mEntries[i][j] << " \t ";
+         }
+         cout << "]" << endl;
+      }
+   }
+
+   // ROW OP'S - IN PLACE
+
+   void RowAddMult(int row, const Vector &v, double mul){
+      mEntries[row][0] += mul*v.GetX();
+      mEntries[row][1] += mul*v.GetY();
+      mEntries[row][2] += mul*v.GetW();
+   }
+
+   void ScaleRow(int row, double mul) {
+      mEntries[row][0] *= mul;
+      mEntries[row][1] *= mul;
+      mEntries[row][2] *= mul;
+   }
+
+   Vector GetRow(int row) const
+   {
+      return Vector(mEntries[row][0], mEntries[row][1], mEntries[row][2]);
+   }
+
+   // Find inverse by gaussian reduction
+   Matrix Inverse() const {
+      Matrix m(*this);
+      Matrix inv; // identity
+      double pivot = m.mEntries[0][0];
+      if (pivot == 0)
+      { // do something
+         cout << "OH NO!" << endl;
+      }
+      inv.ScaleRow(0, 1.0/pivot);
+      inv.RowAddMult(1, GetRow(0), -m.mEntries[1][0]);
+      inv.RowAddMult(2, GetRow(0), -m.mEntries[2][0]);
+      m.ScaleRow(0, 1.0/pivot);
+      m.RowAddMult(1, GetRow(0), -m.mEntries[1][0]);
+      m.RowAddMult(2, GetRow(0), -m.mEntries[2][0]);
+
+      pivot = m.mEntries[1][1];
+      if (pivot == 0)
+      { // do something
+         cout << "OH NO!" << endl;
+      }
+      inv.ScaleRow(1, 1.0/pivot);
+      inv.RowAddMult(0, GetRow(1), -m.mEntries[0][1]);
+      inv.RowAddMult(2, GetRow(1), -m.mEntries[2][1]);
+
+      m.ScaleRow(1, 1.0/pivot);
+      m.RowAddMult(0, GetRow(1), -m.mEntries[0][1]);
+      m.RowAddMult(2, GetRow(1), -m.mEntries[2][1]);
+
+      pivot = m.mEntries[2][2];
+      if (pivot == 0){
+         // do something
+         cout << "OH NO!" << endl;
+      }
+      inv.ScaleRow(2, 1.0/pivot);
+      inv.RowAddMult(0, GetRow(2), -m.mEntries[0][2]);
+      inv.RowAddMult(1, GetRow(2), -m.mEntries[1][2]);
+
+      /*
+      // Check
+      Matrix id_hopefully;
+      id_hopefully = Multiply(inv);
+      id_hopefully.Print();
+      */
+
+      return inv;
    }
 
 };

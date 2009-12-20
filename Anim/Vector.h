@@ -2,14 +2,15 @@
 #define __VECTOR__
 
 #include <math.h>
-
+#include <iostream>
+using namespace std;
 class Vector {
 private:
    double mX, mY, mW;
 public:
    Vector() : mX(0.0), mY(0.0), mW(0.0) {}
    Vector(double x, double y, double w) : mX(x), mY(y), mW(w) {}
-   Vector(double x, double y) : mX(x), mY(y), mW(0.0) {}
+   Vector(double x, double y) : mX(x), mY(y), mW(1.0) {}
 
    Vector(const Vector &other)
       :mX(other.mX), mY(other.mY), mW(other.mW) { }
@@ -49,6 +50,10 @@ public:
       Vector v(*this);
       v.mY = other.mY;
       return v;
+   }
+
+   void Print() const {
+      cout << "Vector(" << GetX() << ", " << GetY() << ", " << GetW() << ")" << endl;
    }
 };
 #endif /* End of include guard: __VECTOR__ */

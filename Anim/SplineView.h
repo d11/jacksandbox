@@ -32,30 +32,23 @@ class SplineView : public Widget, SplineListener {
 private:
    Spline *mSpline;
    double mStepSize;
-   Matrix mTransform;
 public:
-   SplineView(Spline *spline, SDL_Rect rect, Drawer &drawer) 
-	   : Widget("SplineView", rect, drawer), 
-	     SplineListener(spline), 
-		 mSpline(spline), 
-		 mStepSize(0.02),
-		 mTransform()
+   SplineView(Spline *spline, Rect<double> rect, Widget *parent = NULL)
+	   : Widget("SplineView", rect, parent), SplineListener(spline),
+		 mSpline(spline), mStepSize(0.02)
    {
       mSpline->AddListener(this);
-	  mTransform.SetScale(Vector(mRect.w, -mRect.h));
-	  mTransform.SetTranslate(Vector(mRect.x, mRect.y+mRect.h));
-	  mTransform.Print();
    }
 
    virtual void OnSplineChanged() {
    }
 
-   virtual void Paint() {
+   virtual void Paint(Drawer &drawer) {
       Vector c1(0.0, 0.0, 1.0);
       Vector c2(1.0, 1.0, 1.0);
       c1 = mTransform.Multiply(c1);
       c2 = mTransform.Multiply(c2);
-      mDrawer.DrawRect(c1,c2);
+      drawer.DrawRect(c1,c2);
 
       if (!mSpline) {cout << "no spline!!" << endl; return;}
       Vector v1(0.0, 0.0);
@@ -75,10 +68,10 @@ public:
 
          v1 = mTransform.Multiply(Vector(x1, y1, 1.0));
          v2 = mTransform.Multiply(Vector(x2, y2, 1.0));
-         mDrawer.DrawLine(v1, v2);
+         drawer.DrawLine(v1, v2);
       }
 
-      NodePainter nodePainter(mDrawer, mTransform);
+      NodePainter nodePainter(drawer, mTransform);
       mSpline->VisitNodes(nodePainter);
 
    }
