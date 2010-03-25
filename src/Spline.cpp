@@ -22,6 +22,16 @@ Spline::~Spline(){
       delete *iter;
    }
 }
+void SplineNode::AddListener(SplineNodeListener *listener) {
+   mListeners.push_back(listener);
+}
+
+void SplineNode::NotifyListeners() {
+   tListeners::iterator iter;
+   for (iter = mListeners.begin(); iter != mListeners.end(); ++iter) {
+      (*iter)->OnSplineNodeChanged();
+   }
+}
 
 void Spline::VisitNodes(SplineNodeVisitor &visitor) {
    tNodes::iterator iter;

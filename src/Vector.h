@@ -33,6 +33,21 @@ public:
       v.mW *= v.mW; // TODO verify that this is a good idea
       return v;
    }
+   Vector operator-(const Vector &other) const {
+      Vector v(*this);
+      v.mX -= other.mX;
+      v.mY -= other.mY;
+      v.mW *= v.mW; // TODO verify that this is a good idea
+      return v;
+   }
+
+   // 'scalar multiplication in 2 dimensions...'
+   Vector operator*(const double &factor) const {
+      Vector v(*this);
+      v.mX *= factor;
+      v.mY *= factor;
+      return v;
+   }
 
    void operator=(const Vector &other) { // TODO redo properly
       mX = other.mX;
@@ -51,6 +66,8 @@ public:
       v.mY = other.mY;
       return v;
    }
+
+
 
    void Print() const {
       cout << "Vector(" << GetX() << ", " << GetY() << ", " << GetW() << ")" << endl;

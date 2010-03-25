@@ -1,10 +1,8 @@
 #ifndef __RECT__
 #define __RECT__
 
-/*
 #include <iostream>
 using namespace std;
-*/
 
 template <class T>
 class Rect {
@@ -25,6 +23,11 @@ public:
       if (vec.GetY() < y) return false;
       if (vec.GetY() > y + h) return false;
       return true;
+   }
+
+   void Print()
+   {
+      cout << "Rectangle: [x: " << x << " y: " << y << " w: " << w << " h: " << h << "]"<< endl;
    }
 };
 #endif /* End of include guard: __RECT__ */

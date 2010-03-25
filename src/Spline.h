@@ -10,6 +10,7 @@ using namespace std;
 
 class SplineNode;
 class SplineListener;
+class SplineNodeListener;
 class Spline;
 
 class SplineNodeVisitor {
@@ -21,11 +22,15 @@ class SplineNode {
 private:
    Vector mPos;
    Spline &mSpline;
+   typedef std::list<SplineNodeListener*> tListeners;
+   tListeners mListeners;
 public:
    SplineNode(Spline &spline, const Vector &pos);
    const Vector &GetPos() const;
    void SetPos(const Vector &pos) ;
    void Accept(SplineNodeVisitor &visitor) ;
+   void AddListener(SplineNodeListener *listener);
+   void NotifyListeners();
 };
 
 class Spline {
