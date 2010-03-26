@@ -1,44 +1,65 @@
 #ifndef __MATRIX__
 #define __MATRIX__
 
+#include <sstream>
+#include <string>
 #include "Vector.h"
 
 class Matrix {
 private:
    double mEntries[3][3];
 public:
-	Matrix() {
-		SetIdentity();
-	}
+   Matrix() {
+      SetIdentity();
+   }
+
+   Matrix(const Matrix &m) {
+      for (int i = 0; i <= 2; ++i) {
+         for (int j = 0; j <= 2; ++j) {
+            mEntries[i][j] = m.mEntries[i][j];
+         }
+      }
+   }
+
+   // TODO do properly (with 'swap')
+   Matrix &operator=(const Matrix &other) {
+      for (int i = 0; i <= 2; ++i) {
+         for (int j = 0; j <= 2; ++j) {
+            mEntries[i][j] = other.mEntries[i][j];
+         }
+      }
+      return *this;
+   }
+
 
    // set translation portion to the given vector
    void SetTranslate(Vector t) {
-	  mEntries[0][2] = t.GetX();
-	  mEntries[1][2] = t.GetY();
-	  mEntries[2][2] = t.GetW();
+      mEntries[0][2] = t.GetX();
+      mEntries[1][2] = t.GetY();
+      mEntries[2][2] = t.GetW();
    }
 
    void SetIdentity() {
-	   for (int i = 0; i <= 2; ++i) {
-		   for (int j = 0; j <= 2; ++j) {
-			   mEntries[i][j] = (i==j) ? 1.0 : 0.0;
-		   }
-	   }
+      for (int i = 0; i <= 2; ++i) {
+         for (int j = 0; j <= 2; ++j) {
+            mEntries[i][j] = (i==j) ? 1.0 : 0.0;
+         }
+      }
    }
 
    void SetZero() {
-	   for (int i = 0; i <= 2; ++i) {
-		   for (int j = 0; j <= 2; ++j) {
-			   mEntries[i][j] = 0.0;
-		   }
-	   }
+      for (int i = 0; i <= 2; ++i) {
+         for (int j = 0; j <= 2; ++j) {
+            mEntries[i][j] = 0.0;
+         }
+      }
    }
 
    void SetScale(Vector s) {
-	  mEntries[0][0] = s.GetX();
-	  mEntries[0][1] = 0.0;
-	  mEntries[1][0] = 0.0;
-	  mEntries[1][1] = s.GetY();
+      mEntries[0][0] = s.GetX();
+      mEntries[0][1] = 0.0;
+      mEntries[1][0] = 0.0;
+      mEntries[1][1] = s.GetY();
    }
 
    Vector Multiply(const Vector &x) const {
@@ -70,14 +91,18 @@ public:
       return m;
    }
 
-   void Print() const {
+   string Print() const {
+      ostringstream s;
+      s << endl;
       for (int i = 0; i <= 2; ++i) {
-         cout << "[";
+         s << "  [";
          for (int j = 0; j <= 2; ++j) {
-            cout << mEntries[i][j] << " \t ";
+            s << mEntries[i][j] << "\t";
          }
-         cout << "]" << endl;
+         s << "]" << endl;
       }
+
+      return s.str();
    }
 
    // ROW OP'S - IN PLACE

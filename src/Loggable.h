@@ -12,4 +12,7 @@ public:
    void Log(const char *msg) {
       cout << "[" << mName << "] " << msg << endl;
    }
+   void Log(const string &msg) {
+      Log(msg.c_str());
+   }
 };

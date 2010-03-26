@@ -2,6 +2,7 @@
 #define __SPLINELISTENER__
 
 class Spline;
+class SplineNode;
 
 class SplineListener {
 private:

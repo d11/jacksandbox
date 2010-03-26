@@ -10,6 +10,7 @@ const Vector &SplineNode::GetPos() const { return mPos; }
 void SplineNode::SetPos(const Vector &pos) {
    mPos = pos;
    mSpline.OnNodeMoved(this); // Tell spline we've moved
+   NotifyListeners();
 }
 void SplineNode::Accept(SplineNodeVisitor &visitor) {
    visitor.Visit(*this);

@@ -2,6 +2,8 @@
 #define __RECT__
 
 #include <iostream>
+#include <SDL.h>
+#include "Vector.h"
 using namespace std;
 
 template <class T>
@@ -25,9 +27,10 @@ public:
       return true;
    }
 
-   void Print()
-   {
+   void Print() const {
       cout << "Rectangle: [x: " << x << " y: " << y << " w: " << w << " h: " << h << "]"<< endl;
    }
 };
+
+typedef Rect<double> Rectangle;
 #endif /* End of include guard: __RECT__ */

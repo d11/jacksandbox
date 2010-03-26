@@ -59,13 +59,14 @@ int main(int argc, char *argv[]) {
 
    // Do some drawing
 	CairoDrawer drawer(*drawSurface);
+   drawer.BeginDrawing();
 
+   /*
    int i;
    double hGap = 20.0;
    double vHeight = 100.0;
    double vOffset = HEIGHT/2;
    double hOffset = 50.0;
-   drawer.BeginDrawing();
    for (i = 0; i < 26; ++i){
       double x= hOffset+hGap*i;
       double y = vOffset + vHeight*sin(i/25.0*M_PI*2);
@@ -74,7 +75,7 @@ int main(int argc, char *argv[]) {
       char c = 65 + i;
       drawer.DrawLine(v1, v2);
       drawer.DrawText(v1, &c);
-   }
+   }*/
 
    Widget rootWidget("root", videoSurface->clip_rect, NULL);
 
@@ -91,6 +92,13 @@ int main(int argc, char *argv[]) {
 	rec.x = 0.031;
 	rec.y = 0.042;
 	SplineView sv(&spl, rec, &rootWidget);
+
+	Rect<double> rec2;
+	rec2.h = 0.47;
+	rec2.w = 0.47;
+	rec2.x = 0.5;
+	rec2.y = 0.5;
+	SplineView sv2(&spl, rec2, &rootWidget);
 	rootWidget.Paint(drawer);
    drawer.EndDrawing();
    SDL_UnlockSurface(drawSurface);
@@ -117,6 +125,19 @@ int main(int argc, char *argv[]) {
          case SDL_MOUSEBUTTONDOWN:
             // TODO check which button
             rootWidget.OnClickDown(Vector(e.button.x, e.button.y, 1.0));
+            if (0 != SDL_LockSurface(drawSurface))
+               sdl_fail();
+            SDL_FillRect(drawSurface, &drawSurface->clip_rect, 0);
+            drawer.BeginDrawing();
+            rootWidget.Paint(drawer);
+            drawer.EndDrawing();
+            SDL_UnlockSurface(drawSurface);
+            // Copy to the video memory
+            if (0 != SDL_BlitSurface(drawSurface, NULL, videoSurface, NULL))
+               sdl_fail();
+
+            if (0 != SDL_Flip(videoSurface))
+               sdl_fail();
             break;
 
          case SDL_QUIT:

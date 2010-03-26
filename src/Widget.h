@@ -1,34 +1,41 @@
 #ifndef __WIDGET__
 #define __WIDGET__
 
-#include <SDL.h>
 #include "Drawer.h"
 #include "Loggable.h"
-#include "Matrix.h"
+#include "Transform.h"
 #include "Rect.h"
 
+#include <SDL.h>
+#include <vector>
+
+using namespace std;
 class Widget : public Loggable {
 protected:
-   Rect<double> mRect;
-   Matrix mTransform;
-   std::vector<Widget *> mChildren;
+   Rectangle mRect;
+   Transform mTransform;
+   vector<Widget *> mChildren;
    Widget *mParent;
 
 public:
-   Widget(const char *name, Rect<double> rect, Widget *parent = NULL) : Loggable(name), mRect(rect), mTransform(), mChildren(), mParent(parent) {
-	  mTransform.SetScale(Vector(mRect.w, -mRect.h));
-	  mTransform.SetTranslate(Vector(mRect.x, mRect.y+mRect.h));
-     if (NULL != mParent)
-     {
-        mTransform = mParent->mTransform.Multiply(mTransform);
-        mParent->AddChild(this);
-     }
-
-     // Temporary
-	  mTransform.Print();
+   Widget(const char *name, const Rectangle &rect, Widget *parent = NULL) : Loggable(name), mRect(rect), mTransform(rect), mChildren(), mParent(parent) {
+     SetRect(rect);
+      if (NULL != mParent)
+      {
+         parent->AddChild(this);
+      }
    }
 
-   const Rect<double>& GetRect() {
+   virtual ~Widget()
+   {
+      // delete children
+      std::vector<Widget*>::iterator iter;
+      for (iter = mChildren.begin(); iter != mChildren.end(); ++iter) {
+         delete *iter;
+      }
+   }
+
+   const Rectangle& GetRect() {
       return mRect;
    }
 
@@ -37,13 +44,23 @@ public:
    }
 
 
-   void SetRect(const Rect<double> &r) {
+   void SetRect(const Rectangle &r) {
+      Log("setting rect");
+      r.Print();
+
       mRect = r;
+      mTransform = Transform(mRect);
+      if (NULL != mParent)
+      {
+         mTransform = mParent->mTransform.Compose(mTransform);
+      }
+      Log( mTransform.Print());
       OnResize();
       OnMove();
    }
 
    virtual void Paint(Drawer &drawer) {
+  //  Log("Painting");
       std::vector<Widget*>::iterator iter;
       for (iter = mChildren.begin(); iter != mChildren.end(); ++iter) {
          (*iter)->Paint(drawer);
@@ -58,10 +75,8 @@ public:
    }
 
    virtual void OnClickDown(const Vector &vec) {
-      Vector vnew;
-      Matrix inv = mTransform.Inverse();
-      vnew= inv.Multiply(vec); // TODO use stored inverse
       Log("Received click down");
+      Vector vnew = mTransform.ApplyInverse(vec);
       std::vector<Widget*>::iterator iter;
       for (iter = mChildren.begin(); iter != mChildren.end(); ++iter) {
          if ((*iter)->GetRect().Contains(vnew))
@@ -70,6 +85,16 @@ public:
    }
    virtual void OnClickUp(const Vector &) {
       Log("Received click up");
+   }
+
+   void PrintChildren() {
+      Log("Children: {{");
+      std::vector<Widget*>::iterator iter;
+      for (iter = mChildren.begin(); iter != mChildren.end(); ++iter) {
+         (*iter)->PrintChildren();
+      }
+      Log("}}");
+
    }
 };
 #endif /* End of include guard: __WIDGET__ */
