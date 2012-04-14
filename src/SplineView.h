@@ -26,11 +26,14 @@ class NodeView : public Widget, SplineNodeListener {
 private:
    SplineNode *mNode;
    SplineView *mSplineView;
+   bool mBeingDragged;
 public:
    NodeView(SplineNode *node, const Rectangle &rect, SplineView *parent = NULL);
    virtual void OnSplineNodeChanged();
    virtual void Paint(Drawer &drawer);
    void OnClickDown(const Vector &vec);
+   void OnClickUp(const Vector &vec);
+   void OnMouseMove(const Vector &rel, const Vector &vec);
 };
 
 class NodeViewMaker : public SplineNodeVisitor {

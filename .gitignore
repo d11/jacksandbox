@@ -1,0 +1,4 @@
+*.o
+*.plot
+*.log
+generate_timings

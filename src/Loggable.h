@@ -1,3 +1,6 @@
+#ifndef __LOGGABLE__
+#define __LOGGABLE__
+
 #include <iostream>
 #include <string>
 
@@ -8,7 +11,6 @@ private:
    const char *mName;
 public:
    Loggable(const char *name) : mName(name) { }
-
    void Log(const char *msg) {
       cout << "[" << mName << "] " << msg << endl;
    }
@@ -16,3 +18,5 @@ public:
       Log(msg.c_str());
    }
 };
+
+#endif /* End of include guard: __LOGGABLE__ */

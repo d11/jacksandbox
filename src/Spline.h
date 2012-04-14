@@ -16,6 +16,7 @@ class Spline;
 class SplineNodeVisitor {
 public:
    virtual void Visit(SplineNode &node) = 0;
+   virtual ~SplineNodeVisitor() {};
 };
 
 class SplineNode {
@@ -27,8 +28,8 @@ private:
 public:
    SplineNode(Spline &spline, const Vector &pos);
    const Vector &GetPos() const;
-   void SetPos(const Vector &pos) ;
-   void Accept(SplineNodeVisitor &visitor) ;
+   void SetPos(const Vector &pos);
+   void Accept(SplineNodeVisitor &visitor);
    void AddListener(SplineNodeListener *listener);
    void NotifyListeners();
 };
@@ -43,14 +44,11 @@ public:
 	Spline();
 	~Spline();
 
-   void VisitNodes(SplineNodeVisitor &visitor) ;
-
-   void OnNodeMoved(SplineNode *) ;
-
+   void VisitNodes(SplineNodeVisitor &visitor);
+   void OnNodeMoved(SplineNode *);
 	void AddNode(const Vector &node);
 	double GetValue(double x) const;
    void AddListener(SplineListener *listener);
-
    void NotifyListeners();
 };
 #endif /* End of include guard: __SPLINE__ */

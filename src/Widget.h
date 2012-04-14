@@ -1,15 +1,14 @@
 #ifndef __WIDGET__
 #define __WIDGET__
 
-#include "Drawer.h"
-#include "Loggable.h"
 #include "Transform.h"
 #include "Rect.h"
-
-#include <SDL.h>
+#include "Loggable.h"
 #include <vector>
-
 using namespace std;
+
+class Drawer;
+
 class Widget : public Loggable {
 protected:
    Rectangle mRect;
@@ -18,83 +17,22 @@ protected:
    Widget *mParent;
 
 public:
-   Widget(const char *name, const Rectangle &rect, Widget *parent = NULL) : Loggable(name), mRect(rect), mTransform(rect), mChildren(), mParent(parent) {
-     SetRect(rect);
-      if (NULL != mParent)
-      {
-         parent->AddChild(this);
-      }
-   }
+   Widget(const char *name, const Rectangle &rect, Widget *parent = NULL);
+   virtual ~Widget();
 
-   virtual ~Widget()
-   {
-      // delete children
-      std::vector<Widget*>::iterator iter;
-      for (iter = mChildren.begin(); iter != mChildren.end(); ++iter) {
-         delete *iter;
-      }
-   }
+   const Rectangle& GetRect();
+   void AddChild(Widget *child);
+   void SetRect(const Rectangle &r);
+   virtual void Paint(Drawer &drawer);
 
-   const Rectangle& GetRect() {
-      return mRect;
-   }
+   virtual void OnResize();
+   virtual void OnMove();
+   virtual void OnClickDown(const Vector &vec);
+   virtual void OnMouseMove(const Vector &rel, const Vector &vec);
+   virtual void OnClickUp(const Vector &);
 
-   void AddChild(Widget *child) {
-      mChildren.push_back(child);
-   }
+   void PrintChildren();
 
-
-   void SetRect(const Rectangle &r) {
-      Log("setting rect");
-      r.Print();
-
-      mRect = r;
-      mTransform = Transform(mRect);
-      if (NULL != mParent)
-      {
-         mTransform = mParent->mTransform.Compose(mTransform);
-      }
-      Log( mTransform.Print());
-      OnResize();
-      OnMove();
-   }
-
-   virtual void Paint(Drawer &drawer) {
-  //  Log("Painting");
-      std::vector<Widget*>::iterator iter;
-      for (iter = mChildren.begin(); iter != mChildren.end(); ++iter) {
-         (*iter)->Paint(drawer);
-      }
-
-   }
-   virtual void OnResize() {
-      Log("Resized...");
-   }
-   virtual void OnMove() {
-      Log("Moved..");
-   }
-
-   virtual void OnClickDown(const Vector &vec) {
-      Log("Received click down");
-      Vector vnew = mTransform.ApplyInverse(vec);
-      std::vector<Widget*>::iterator iter;
-      for (iter = mChildren.begin(); iter != mChildren.end(); ++iter) {
-         if ((*iter)->GetRect().Contains(vnew))
-            (*iter)->OnClickDown(vec);
-      }
-   }
-   virtual void OnClickUp(const Vector &) {
-      Log("Received click up");
-   }
-
-   void PrintChildren() {
-      Log("Children: {{");
-      std::vector<Widget*>::iterator iter;
-      for (iter = mChildren.begin(); iter != mChildren.end(); ++iter) {
-         (*iter)->PrintChildren();
-      }
-      Log("}}");
-
-   }
+   const Transform &GetTransform() const;
 };
 #endif /* End of include guard: __WIDGET__ */

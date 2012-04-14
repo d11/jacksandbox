@@ -3,6 +3,8 @@
 #include "Widget.h"
 #include "Spline.h"
 #include "Matrix.h"
+#include "Drawer.h"
+
 
 using namespace std;
 
@@ -24,12 +26,11 @@ void NodePainter::Visit(SplineNode &node)
 
 NodeView::NodeView(SplineNode *node, const Rectangle &rect, SplineView *parent)
          : Widget("SplineNodeView", rect, (Widget*)parent), SplineNodeListener(node),
-           mNode(node), mSplineView(parent)
+           mNode(node), mSplineView(parent), mBeingDragged(false)
 {
    mNode->AddListener(this);
 }
 void NodeView::OnSplineNodeChanged() {
-   cout << "updating node view..." << endl;
    mSplineView->UpdateNodeView(this, mNode);
 }
 void NodeView::Paint(Drawer &drawer) {
@@ -37,7 +38,7 @@ void NodeView::Paint(Drawer &drawer) {
    //v.MakeFree();
    //v = mTransform.Multiply(v);
    //cout << "Painting spline node " << v.GetX() << ", " << v.GetY() << endl;
-  // cout << "Painting spline node " << endl;
+   //cout << "Painting spline node " << endl;
 
    Vector v(0.5, 0.5);
    v = mTransform.Apply(v);
@@ -62,6 +63,8 @@ void NodeView::Paint(Drawer &drawer) {
 
 void NodeView::OnClickDown(const Vector &vec)
 {
+   mBeingDragged = true;
+   /*
    Vector vec2 = mTransform.ApplyInverse(vec);
    vec2.Print();
    Vector v = mNode->GetPos();
@@ -70,7 +73,27 @@ void NodeView::OnClickDown(const Vector &vec)
    if (y2 > 1.0) y2 -= 1.0;
    mNode->SetPos(Vector(v.GetX(), y2));
    //mNode->SetPos((v*2.0-vec2)*0.5);
-   Widget::OnClickDown(vec);
+   Widget::OnClickDown(vec);*/
+}
+
+void NodeView::OnClickUp(const Vector &)
+{
+   mBeingDragged = false;
+}
+
+void NodeView::OnMouseMove(const Vector &rel, const Vector &vec)
+{
+   if (mBeingDragged)
+   {
+      Rectangle r = mRect;
+      Vector vnew = mParent->GetTransform().ApplyInverse(vec);
+
+      r.x = vnew.GetX();
+      r.y = vnew.GetY();
+      //SetRect(r);
+      mNode->SetPos(Vector(r.x, r.y));
+   }
+   Widget::OnMouseMove(rel, vec);
 }
 
 NodeViewMaker::NodeViewMaker(SplineView *parent, const Matrix &trans)
@@ -80,7 +103,6 @@ NodeViewMaker::NodeViewMaker(SplineView *parent, const Matrix &trans)
 void NodeViewMaker::Visit(SplineNode &node)
 {
    const double rectSize = 10.0;
-   double r = rectSize / 2.0;
 
    Rect<double> rect;
 
@@ -90,16 +112,14 @@ void NodeViewMaker::Visit(SplineNode &node)
    rect.y = v_centre.GetY()-0.05;
    rect.w = 0.1;
    rect.h = 0.1;
-   rect.Print();
    new NodeView(&node, rect, mParent);
 }
 
 SplineView::SplineView(Spline *spline, const Rectangle &rect, Widget *parent)
 	   : Widget("SplineView", rect, parent), SplineListener(spline),
-		 mSpline(spline), mStepSize(0.02)
+		 mSpline(spline), mStepSize(0.05) // TODO use spline elevation for drawing..
    {
       mSpline->AddListener(this);
-      mTransform.Print();
       NodeViewMaker nodeViewMaker(this, mTransform.GetMatrix());
       mSpline->VisitNodes(nodeViewMaker);
    }
@@ -111,7 +131,6 @@ void SplineView::OnSplineChanged() {
 void SplineView::UpdateNodeView(NodeView *nv, SplineNode *node)
 {
    const double rectSize = 10.0;
-   double r = rectSize / 2.0;
 
    Rect<double> rect;
 
@@ -122,13 +141,12 @@ void SplineView::UpdateNodeView(NodeView *nv, SplineNode *node)
    rect.w = 0.1;
    rect.h = 0.1;
 
-   cout << "going to set rect" << endl;
    nv->SetRect(rect);
 }
 
 void SplineView::Paint(Drawer &drawer) {
-   Vector c1(0.0, 0.0, 1.0);
-   Vector c2(1.0, 1.0, 1.0);
+   Vector c1(0.0, 0.0);
+   Vector c2(1.0, 1.0);
    c1 = mTransform.Apply(c1);
    c2 = mTransform.Apply(c2);
    drawer.DrawRect(c1,c2);
@@ -141,7 +159,7 @@ void SplineView::Paint(Drawer &drawer) {
    double x2 = 0.0;
    double y1 = 0.0;
    double y2 = mSpline->GetValue(x2);
-   while (x1 <= 1.0 - mStepSize) {
+   while (x1 < 1.0 - mStepSize) {
 
       x1 = x2;
       y1 = y2;

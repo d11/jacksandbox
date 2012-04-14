@@ -42,7 +42,7 @@ void Spline::VisitNodes(SplineNodeVisitor &visitor) {
 }
 
 void Spline::OnNodeMoved(SplineNode *) {
-   cout << "Node Moved..." << endl;
+   //cout << "Node Moved..." << endl;
 }
 
 void Spline::AddNode(const Vector &node){
@@ -56,6 +56,7 @@ double Spline::GetValue(double x) const {
    // search for relevant nodes..
    // TODO binarysearch
    tNodes::const_iterator iter = mNodes.begin();
+   if (iter == mNodes.end()) return 0.0;
    const Vector *v1 = NULL;
 
    //TODO check empty
